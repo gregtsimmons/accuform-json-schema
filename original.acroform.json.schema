@@ -1,0 +1,627 @@
+ {
+    "$schema": "http://json-schema.org/schema#",
+
+	"id": "http://www.accusoft.com/schemas/acroform.json"
+    "title": "Acroform",
+    "description": "An acroform definition", 
+	"type": "object",
+	"properties": {
+		"pages" : {
+			"type": "array",
+			"items": [
+				{"$ref": "#/definitions/page" }
+			]
+		}
+	},
+	
+	"definitions": {
+	
+		"page": {
+			"type": "object",
+			"properties": {
+				"page" : {
+					"description": "The page number",
+					"type": "integer",
+					"minimum": 0,
+					"exclusiveMinimum": true
+				},
+				"fields": {
+					"type": "array",
+					"items": [
+						{ "$ref": "#/definitions/field"}
+					]
+				}
+			},
+			"required": ["page", "fields"]
+		}, 
+		
+		"field": {
+			"type": "object",
+			"properties": {
+				"fieldType": {
+					"description": "The type of field.  (PDF Reference - field dictionary 'FT'),
+					"enum": ["Button", "Text", "Choice", "Signature"]
+				}
+				"name": {
+					"type": "string",
+					"description": "A unique name for this specific field. For radio buttons, all the radio buttons in a group have the same Name, but each button has a different Button Value. (PDF Reference - field dictionary 'T')"
+				},
+				"alternateName": {
+					"type": "string",
+					"description": "An alternate field name to be used in place of the actual field name wherever the field must be identified in the user interface (such as in error or status messages referring to the field). This text is also useful when extracting the document’s contents in support of accessibility to users with disabilities or for other purposes.  (PDF Reference - field dictionary 'TU')"
+				},
+				"mappingName": {
+					"type": "string",
+					"description": "The mapping name to be used when exporting interactive form field data from the document.  (PDF Reference - field dictionary 'TM')"
+				},
+				"value": {
+					"type": "various",
+					"description": " The field’s value, whose format varies depending on the field type. See the descriptions of individual field types for further information. (PDF Reference - field dictionary 'V')"
+				},
+				"defaultValue": {
+					"type": "various",
+					"description": " The field’s value, whose format varies depending on the field type. See the descriptions of individual field types for further information. (PDF Reference - field dictionary 'DV')"
+				},
+				"fieldVisibility": {
+					"description": "(PDF Reference - annotation dictionary 'F')",
+					"enum": [
+						"visible", 
+						"hidden", 
+						"visibleNotPrinted", 
+						"hiddenPrinted"
+					]
+				},
+				"readOnly": {
+					"type": "boolean",
+					"description": "If set/true, the user may not change the value of the field. (PDF Reference - field dictionary 'Ff', bit-position 1)"
+				},
+				"required": {
+					"type": "boolean",
+					"description": "If set/true, the field must have a value at the time it is exported by a submit-form action (PDF Reference - field dictionary 'Ff', bit-position 2)"
+				},
+				"noExport": {
+					"type": "boolean",
+					"description": "If set/true,  the field must not be exported by a submit-form action (PDF Reference - field dictionary 'Ff', bit-position 3)"
+				},
+				"orientation": {
+					"type": "integer",
+					"description": "Rotation of field in degrees, 0, 90, 180, 270. (PDF Reference - widget annotation appearance characteristics dictionary (MK)(R) dictionary 'Ff', bit-position 3)",
+					"multipleOf": 90,
+					"minimum": 0,
+					"maximum": 270,
+					"default": 0
+				},
+				"tabOrder": {
+					"type": "integer",
+					"description": "The tab order index of the field within the current page. (PDF Reference - order appears to be the order of the widget annotations in the page objects 'Annots' array)"
+				},
+				"appearance": { "$ref": "#/definitions/appearance"},
+				"boundingBox": { "$ref": "#/definitions/boundingBox"},
+				"options": { 
+					"oneOf" [
+						"$ref": "#/definitions/optionsButton",
+						"$ref": "#/definitions/optionsChoice",
+						"$ref": "#/definitions/optionsTextField",
+						"$ref": "#/definitions/optionsSignature",
+						null
+				},
+				"format": { "$ref": "#/definitions/format"},
+				"validation": { "$ref": "#/definitions/validation"},
+				"actions": { "$ref": "#/definitions/actions"},
+				"calculation": { "$ref": "#/definitions/calculation" }
+			}
+			"required": ["fieldType", "name", "appearance", "boundingBox", "options"]
+		},
+
+		"appearance": {
+			"type": "object",
+			"properties": {
+				"borderColor": { "$ref": "#/definitions/color"},
+				"borderWidth": { 
+					"type" : integer, 
+					"minimum": 1,
+					"description": "(PDF Reference border style dictionary 'W')"
+				},
+				"backgroundColor": { "$ref": "#/definitions/color"},
+				"borderStyle": { 
+					"enum": ["solid", "dashed", "beveled", "inset", "underline"],
+					"description": "(PDF Reference border style dictionary 'S')"
+				},
+				"fontSize": { 
+					"description": "(PDF Reference default appearance string 'DA')",
+					"anyOf": [
+						{ 
+							"enum": ["auto"]
+						},
+						{ 
+							"type": "integer", 
+							"minimum": 0, 
+							"minimumExclusive": true
+						}
+					],
+					"default" : "auto"
+				},
+				"color": { "$ref": "#/definitions/color"},
+				"font" : { 
+					"type": "string",
+					"description": "the name of the font"
+				},
+				"rightToLeftLanguageConfig" : {
+					"type" : "object",
+					"description": "Occurs only when Enable Right-To-Left Language Options is true, the digit style and text direction are for text fields, drop-down list boxes, and list boxes.",
+					"properties": {
+						"digitStyle": {},
+						"textDirection": {"enum": ["unknown-1", "unknown-2"]}
+					}
+				}
+			}
+		},
+		
+	    "color": {
+			"anyOf": [
+				{ "enum": [ "AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "Black", "BlanchedAlmond", "Blue", "BlueViolet", "Brown", "BurlyWood", "CadetBlue", "Chartreuse", "Chocolate", "Coral", "CornflowerBlue", "Cornsilk", "Crimson", "Cyan", "DarkBlue", "DarkCyan", "DarkGoldenRod", "DarkGray", "DarkGreen", "DarkGrey", "DarkKhaki", "DarkMagenta", "DarkOliveGreen", "DarkOrange", "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkSlateGrey", "DarkTurquoise", "DarkViolet", "DeepPink", "DeepSkyBlue", "DimGray", "DimGrey", "DodgerBlue", "FireBrick", "FloralWhite", "ForestGreen", "Fuchsia", "Gainsboro", "GhostWhite", "Gold", "GoldenRod", "Gray", "Green", "GreenYellow", "Grey", "HoneyDew", "HotPink", "IndianRed ", "Indigo ", "Ivory", "Khaki", "Lavender", "LavenderBlush", "LawnGreen", "LemonChiffon", "LightBlue", "LightCoral", "LightCyan", "LightGoldenRodYellow", "LightGray", "LightGreen", "LightGrey", "LightPink", "LightSalmon", "LightSeaGreen", "LightSkyBlue", "LightSlateGray", "LightSlateGrey", "LightSteelBlue", "LightYellow", "Lime", "LimeGreen", "Linen", "Magenta", "Maroon", "MediumAquaMarine", "MediumBlue", "MediumOrchid", "MediumPurple", "MediumSeaGreen", "MediumSlateBlue", "MediumSpringGreen", "MediumTurquoise", "MediumVioletRed", "MidnightBlue", "MintCream", "MistyRose", "Moccasin", "NavajoWhite", "Navy", "OldLace", "Olive", "OliveDrab", "Orange", "OrangeRed", "Orchid", "PaleGoldenRod", "PaleGreen", "PaleTurquoise", "PaleVioletRed", "PapayaWhip", "PeachPuff", "Peru", "Pink", "Plum", "PowderBlue", "Purple", "RebeccaPurple", "Red", "RosyBrown", "RoyalBlue", "SaddleBrown", "Salmon", "SandyBrown", "SeaGreen", "SeaShell", "Sienna", "Silver", "SkyBlue", "SlateBlue", "SlateGray", "SlateGrey", "Snow", "SpringGreen", "SteelBlue", "Tan", "Teal", "Thistle", "Tomato", "Turquoise", "Violet", "Wheat", "White", "WhiteSmoke", "Yellow", "YellowGreen"] }, 
+				{ "type": "string", "pattern": "^#(?:(?:[0-9a-fA-F]{1,2})){3}$" }
+			]
+		},
+
+		"boundingBox": {
+			"type": "object",
+			"description": "Coordinates are in points which are 1/72 of an inch, measured from the page origin in the lower left corner of the page. (PDF Reference - Annotation dictionary 'Rect')",
+			"properties": {
+				"lowerLeftX": {
+					"type": "integer",
+					"minimum": "0"
+				},
+				"lowerLeftY": {
+					"type": "integer",
+					"minimum": "0"
+				},
+				"upperRightX": {
+					"type": "integer",
+					"minimum": "0"
+				},
+				"upperRightY": {
+					"type": "integer",
+					"minimum": "0"
+				}
+			}
+		},
+
+		"optionsButton": {
+			"type": "object",
+			"properties": {
+				"pushButton": {
+					"type": "boolean",
+					"description": "If set, the field is a pushbutton that does not retain a permanent value. (PDF Reference - field dictionary 'Ff', bit-position 17)", 
+					"default": false
+				},
+				"radio": {
+					"type": "boolean",
+					"description": "If set, the field is a set of radio buttons; if clear, the field is a check box. This flag is meaningful only if the Pushbutton flag is clear. (PDF Reference - field dictionary 'Ff', bit-position 16)",
+				},
+				"exportValue": {
+					"type": "string",
+					"description": "Applies to checkboxes, value to represent the item if the data will be exported. If left blank, the fields name property tab is used as the export value. (PDF Reference - field dictionary 'Opt', TABLE 8.76)"
+				},
+				"checkedByDefault": {
+					"type": "boolean",
+					"description": "Applies to checkboxes and radio buttions. Indicates that the checkbox or radio button is selected unless the user deselects it. (PDF Reference - field dictionary 'V', value is set to 'Yes' if checked)"
+				},				
+				"selectRelatedRadioButtonsInUnison": {
+					"type": "boolean",
+					"description": "Applies to radio buttons. Allows single-click selection of multiple related radio buttons. For example, if th26 user selects a radio button that has the same field name and selected content as another, both radio buttons are selected. (PDF Reference - field dictionary 'Ff', bit-position 26)",
+					"default": false
+				},
+				"style": {"$ref": "#/definitions/enumCheckboxStyle"},
+				"buttonValue": {
+					"type": "string",
+					"description": "Applies to radio buttons. Identifies the specific radio button and differentiates it from other radio buttons that have the same Name value. (PDF Reference - field dictionary 'AS')"
+				},
+				"NoToggleToOff": {
+					"type": "boolean",
+					"description": "Applies to radio buttons. If set, exactly one radio button must be selected at all times; clicking the currently selected button has no effect. If clear, clicking the selected button deselects it, leaving no button selected (PDF Reference - field dictionary 'Ff', bit-position 15)",
+					"default": true
+				},
+				"normalCaption": {
+					"type": "string",
+					"description":  "Caption displayed when this widget is not interacting with the user."
+				},
+				"rolloverCaption": {
+					"type": "string",
+					"description": "Applies only to pushbutton, caption displayed when the user rolls the cursor into its active area without pressing the mouse button"
+				},
+				"downCaption": {
+					"type": "string",
+					"description": "Applies only to pushbutton, caption displayed when the mouse button is pressed within its active area"
+				},
+				"normalIcon": {
+					"type": "string",
+					"description": "Icon displayed when it is not interacting with the user"
+				},
+				"rolloverIcon": {
+					"type": "string",
+					"description": "Applies only to pushbutton, icon displayed when the user rolls the cursor into its active area without pressing the mouse button"
+				},
+				"downIcon": {
+					"type": "string",
+					"description": "Applies only to pushbutton, icon displayed when the mouse button is pressed within its active area"
+				},
+				"captionIconPositioning": {
+					"description": "Applies to radio buttons. If set, exactly one radio button must be selected at all times; clicking the currently selected button has no effect. If clear, clicking the selected button deselects it, leaving no button selected (PDF Reference - appearance characteristics dictionary 'TP')",				
+					"enum": [ "CAPTION_ONLY",  "ICON_ONLY",  "CAPTION_BELOW_ICON", "CAPTION_ABOVE_ICON", "CAPTION_RIGHT_OF_ICON", "CAPTION_LEFT_OF_ICON"],
+					"default": "CAPTION_ONLY"
+				}
+			}
+		},
+		
+		"enumCheckboxStyle": {
+			"enum":[
+				"Check", "Circle", "Cross", "Diamond", "Square", "Star" 
+			]
+		},
+		
+		"optionsChoice": {
+			"type": "object",
+			"properties": {
+				"combo": {
+					"type": "boolean",
+					"description": "If true, the field is a combo box; if clear, the field is a list box.",
+					"default": false
+				},
+				"listItems" : {
+					"type": "array",
+					"item": {
+						"type": "object",
+						"properties": {
+							"displayText": { "type": "string"},
+							"valueText": { "type": "string"}
+						}
+					}, 
+					"description": "An array of options to be presented to the user. Each element of the array is either a text string (displayText), representing one of the available options or an object consisting of two text strings: the option’s export value (valueText) and the text to be displayed (displayText)"
+				},
+				"sort": {
+					"type": "boolean",
+					"description": "If set, the field’s option items should be sorted alphabetically.  This flag is intended for use by form authoring tools, not by PDF viewer applications. Viewers should simply display the options in the order in which they occur in the listItems array."
+				},
+				"commitOnSelChange": {
+					"type": "boolean",
+					"description": "If set, the new value is committed as soon as a selection is made with the pointing device. This option enables applications to perform an action once a selection is made, without requiring the user to exit the field. If clear, the new value is not committed until the user exits the field.",
+					"default": false
+				},
+				"multiSelect": { 
+					"type": "boolean",
+					"default": false,
+					"description": "If set, more than one of the field’s option items may be selected simultaneously. If clear, no more than one item at a time may be selected."
+				},
+				"topIndex": {
+					"type": "integer",
+					"description": "For scrollable list boxes, the top index the index in the listItems array of the first option visible in the list.",
+					"default": 0
+				},
+				"allowUserEntry": { 
+					"type": "boolean",
+					"description": "If set, the combo box includes an editable text box as well as a dropdown list; if clear, it includes only a drop-down list. This flag is meaningful only if the Combo flag is set.",
+					"default" : false
+				},
+				"doNotSpellCheck": {
+					"type": "boolean",
+					"description": "If set, text entered in the field is not spell-checked. This flag is meaningful only if the allowUserEntry is true",
+					"default" : false
+				},
+				"selectedValue": {
+					"oneOf" [
+						{
+							"type": "string",
+							"description": "a text string representing selected item in the listItems array, this will either be the displayText if that is the only items specified, or the valueText if both displayText and valueText are specified"
+						},
+						{
+							"type": "array",
+							"items": {
+								"type" : "string",
+								"description": "an array of strings representing selected items in the listItems array"
+							}
+						}
+					]
+				}
+			}
+		},
+		
+		"optionsTextField": {
+			"type": "object",
+			"properties": {
+				"textAlign" :{ 
+					"enum": ["left", "right", "center"],
+					"default": "left"
+				},
+				"scrollLongText": { 
+					"type": "boolean",
+					"description": " (PDF Reference - field dictionary 'Ff', bit-position 24 [DoNotScroll])",
+					"default" : false
+				},
+				"multiLine": { 
+					"type": "boolean",
+					"description": " (PDF Reference - field dictionary 'Ff', bit-position 13)",
+					"default" : false
+				},
+				"allowRichTextFormatting": { 
+					"type": "boolean",
+					"description": " (PDF Reference - field dictionary 'Ff', bit-position 26)",
+					"default" : false
+				},
+				"maxLen": { 
+					"type": "integer",
+					"description": "The maximum length of the field’s text, in characters.",
+					"minimum": 0,
+					"minimumExclusive" : true
+				},
+				"password": { 
+					"type": "boolean",
+					"description": "displays as series of asterisks (*). (PDF Reference - field dictionary 'Ff', bit-position 14)",
+					"default" : false
+				},
+				"usedForFileSelection": { 
+					"type": "boolean",
+					"description": "Allows the user to enter a file path as the field’s value when a file is submitted along with the form. This option is available only when Scroll Long Text is the only selected option in the Options tab. (PDF Reference - field dictionary 'Ff', bit-position 21)",
+					"default" : false
+				},
+				"checkSpelling": { 
+					"type": "boolean",
+					"description": "Checks spelling of user entered text.  (PDF Reference - field dictionary 'Ff', bit-position 23, [DoNotSpellCheck])",
+					"default" : false
+				},
+				"combOfCharacters": { 
+					"type": "boolean",
+					"description": "Spreads the user-entered text evenly across the width of the text field. If a border color is specified in the Appearance tab, each character entered in the field is separated by lines of that color. This option is available only when no other option is selected.  (PDF Reference - field dictionary 'Ff', bit-position 25)",
+					"default" : false
+				}
+			}
+		},
+		
+		"optionsSignature": {
+			"description": "These options determine what happens when the user applies a digital signature to the form",
+			"oneOf": [
+				"nothingHappensWhenSigned": {
+					"type": "boolean",
+					"default": true
+				},
+				"markAsReadOnly": {
+					"description": "specifies what fields should be marked as read-only when the user applies a digital signature to the form"
+					"oneOf": [
+						"allFields": {
+							"type": "boolean",
+							"description": "prevents changes to any field"
+						}, 
+						"allFieldsExceptThese": {
+							"type": "array",
+							"item": {
+								"type": "string",
+								"description": "Field name of field to exclude from those to be marked read-only"
+							}
+						}, 
+						"justTheseFields": {
+							"type": "array",
+							"item": {
+								"type": "string",
+								"description": "Field name of field to include in those to be marked read-only"
+							}
+						}
+					]
+				},
+				"executeScriptWhenFieldIsSigned": {
+					"type": "string",
+					"description": "Custom JavaScript to be exectuted when the user digitally signs the form"
+				}
+			}
+		},
+		
+		"format": {
+			"type": "object",
+			"description": "Used only for text form fields or editable dropdown/combo box form fields",
+			"properties": {
+				"formatCategory": { 
+					"enum": [
+						"None", "Number", "Date", "Time", "ZipCode", "ZipCodePlus4", "PhoneNumber", "SocialSecurityNumber", "ArbitraryMask", "CustomJavaScript"
+					]
+				},
+				"formatOptions" : {
+					"oneOf": [
+						{"$ref": "#/definitions/numberFormatOptions"},
+						{"$ref": "#/definitions/dateFormatOptions"},
+						{"$ref": "#/definitions/timeFormatOptions"},
+						{"$ref": "#/definitions/zipCodeFormatOptions"},
+						{"$ref": "#/definitions/zipCodePlus4FormatOptions"},
+						{"$ref": "#/definitions/phoneNumberFormatOptions"},
+						{"$ref": "#/definitions/ssnFormatOptions"},
+						{"$ref": "#/definitions/arbitraryMaskFormatOptions"},
+						{"$ref": "#/definitions/customJavaScriptFormatOptions"},
+						null
+					]
+				}
+			}
+		},
+
+		"numberFormatOptions": {
+			"type": "object",
+			"properties": {
+				"decimalPlaces": { "type": "integer", "minimum": 0},
+				"separatorStyle": {},
+				"currencySymbol": {
+					"type": "string",
+					"pattern": "\p{Sc}"
+				},
+				"symbolLocation": {},
+				"negativeNumberStyle": {},
+				"percentage": {}
+			}
+		},
+		
+		"dateFormatOptions": {
+			"type": "string",
+			"description": "List includes one-, two-, and four-digit variations where d stands for the day, m stands for month, and y stands for year."
+		},
+		
+		"timeFormatOptions": {
+			"type": "string",
+			"description": "List includes display variations where h stands for the hour on a 12-hour clock, H stands for the hour on a 24-hour clock, MM stands for minutes, ss stands for the seconds, and tt stands for AM or PM."
+		},
+		
+		"zipCodeFormatOptions": {
+			"type": "string",
+			"pattern": "^\d{5}$"
+		},
+		
+		"zipCodePlus4FormatOptions": {
+			"type": "string",
+			"pattern": "^\d{5}\-\d{4}$"
+		},
+		
+		"phoneNumberFormatOptions": {
+			"type": "string",
+			"pattern": "^(\+0?1\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$"
+		},
+		
+		"ssnFormatOptions": {
+			"type": "string",
+			"pattern": "^\d{3}-?\d{2}-?\d{4}$"
+		},
+
+		"arbitraryMaskFormatOptions": {
+			"type": "string",
+			"description": "specify which types of characters the user can enter in any given rectangle, and how the data displays in the field.  A: Accepts only letters (A–Z, a-z).  X: Accepts spaces and most printable characters, including all characters available on astandard keyboard and ANSI characters in the ranges of 32–126 and 128–255.  O: The letter 'O' accepts alphanumeric characters (A–Z, a-z, and 0–9).  9: Accepts only numeric characters (0–9). For example, a mask setting of AAA--p#999 accepts the input BOE--p#767. A mask setting of OOOOO@XXX accepts the input vad12@3Up."
+		},
+		
+		"customJavaScriptFormatOptions": {
+			"type": "string",
+			"anyOf": [
+				"customFormScript": {
+					"type": "string",
+					"description": "custom JavaScripts for formatting"
+				},
+				"customKeystrokeScript": {
+					"type": "string",
+					"description": "custom scripts you added to validate keystrokes."
+				}
+			]
+		},
+		
+		"validation": {
+			"type": "object",
+			"description": "Validation properties restrict entries to specified ranges, values, or characters, ensuring that users enter the appropriate data for a specified form field",
+			"properties": {
+				"fieldValueIsNotValidated": {
+					"type": "boolean",
+					"description": "Turns off validation"
+				},
+				"fieldValueIsInRange": {
+					"oneOf" : [
+						{
+							"type": "object",
+							"properties": {
+								"fromValue": {
+									"type": "number",
+									"description": "must be less than toValue"
+								},
+								"toValue": {
+									"type": "number",
+									"description": "must be greater than fromValue"
+								}
+							}
+						},
+						{
+							"type": "object",
+							"properties": {
+								"fromPercent": {
+									"type": "number",
+									"description": "must be less than toPercent",
+									"minimum": 0.00,
+									"maximum": 1.00,
+									"minimumExclusive": true,
+									"maximumExclusive": true
+								},
+								"toPercent": {
+									"type": "number",
+									"description": "must be greater than fromPercent",
+									"minimum": 0.00,
+									"maximum": 1.00,
+									"minimumExclusive": true,
+									"maximumExclusive": true
+								}
+							}
+						}
+					],
+					"description": "Sets a numeric range for form fields using values given as a number or a percentage."
+				},
+				"runCustomValidationScript": {
+					"type": "string",
+					"description": "Validates by provided JavaScript."
+				}
+			}
+		},
+		
+		"actions": {
+			"type": "array",
+			"item": {
+				"type": "object",
+				"properties": {
+					"trigger": {
+						"enum": [
+							"MouseUp", "MouseDown", "MouseEnter", "MouseExit", "OnFocus", "OnBlur"
+						],
+						"description": "Specifies the user action that initiates an action"
+					},
+					"action": {
+						"enum": [
+							"ExecuteAMenuItem", "GoToA3DView", "GoToAMultimediaView", "GoToAPageView", "ImportFormData", "MultimediaOperation_Acrobat9andlater", "OpenAFile", "OpenAWebLink", "PlayASound", "PlayMedia_Acrobat5Compatible", "PlayMedia_Acrobat6AndLaterCompatible", "ReadAnArticle", "ResetAForm", "RunAJavaScript", "SetLayerVisibility", "Showafield", "HideAField", "SubmitAForm"
+						],
+						"description": "Specifies the event that occurs when the user triggers the action"
+					}
+				}
+			}
+		},
+		
+		"calculations": {
+			"type": "array",
+			"item": {
+				"type": "object",
+				"properties": {
+					"valueIsNotCalculated": {
+						"type": "boolean",
+						"description": "false, if this is a calculated field, otherwise true.",
+						"default": true
+					},
+					"valueFormula": { 
+						"enum": [
+							"Sum", 
+							"Product", 
+							"Average", 
+							"Minimum", 
+							"Maximum",
+							"SimplifiedFieldNotation",
+							"CustomCalculationJavaScript"
+						]
+					},
+					"fieldsInCalculation": {
+						"description": "Only used with the following value formulas {Sum, Product, Average, Minimum, and Maximum}. list of the fields (unique field names) in the form used in the calculation",
+						"type": "array",
+						"item": {
+							"type": "string",
+							"description": "unique field name of field used in calculation"
+						}
+					},
+					"simplifiedFieldNotation": {
+						"type": "string", 
+						"description": "JavaScript script with field names and simple arithmetic signs."
+					},
+					"customCalculationScript": {
+						"type": "string", 
+						"description": "custom JavaScript scripts for calculations"
+					},
+					"calculationSequenceNumber":{
+						"type": "integer",
+						"description": "Present if this is a calculated field. The sequential number of this field's calculation among the form's calculated fields, so field calculations can be done in an ordered sequence."
+					}
+				}
+			}		
+		}
+	}
+ }

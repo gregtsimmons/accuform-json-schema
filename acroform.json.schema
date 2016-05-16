@@ -1,0 +1,171 @@
+ {
+    "$schema": "http://json-schema.org/schema#",
+
+	"id": "http://www.accusoft.com/schemas/acroform.json",
+    "title": "Acroform",
+    "description": "An acroform definition", 
+	"type": "object",
+	"properties": {
+		"pages" : {
+			"type": "array",
+			"items": [
+				{"$ref": "#/definitions/page" }
+			]
+		}
+	},
+	
+	"definitions": {
+	
+		"page": {
+			"type": "object",
+			"properties": {
+				"page" : {
+					"description": "The page number",
+					"type": "integer",
+					"minimum": 0,
+					"exclusiveMinimum": true
+				},
+				"fields": {
+					"type": "array",
+					"items": [
+						{ "$ref": "#/definitions/field"}
+					]
+				}
+			},
+			"required": ["page", "fields"]
+		}, 
+		
+		"field": {
+			"type": "object",
+			"properties": {
+				"fieldType": {
+					"description": "The type of field.  (PDF Reference - field dictionary 'FT')",
+					"enum": ["Button", "Text", "Choice", "Signature"]
+				},
+				"name": {
+					"type": "string",
+					"description": "A unique name for this specific field. For radio buttons, all the radio buttons in a group have the same Name, but each button has a different Button Value. (PDF Reference - field dictionary 'T')"
+				},
+				"required": {
+					"type": "boolean",
+					"description": "If set/true, the field must have a value at the time it is exported by a submit-form action (PDF Reference - field dictionary 'Ff', bit-position 2)"
+				},
+				"tabOrder": {
+					"type": "integer",
+					"description": "The tab order index of the field within the current page. (PDF Reference - order appears to be the order of the widget annotations in the page objects 'Annots' array)"
+				},
+				"appearance": { "$ref": "#/definitions/appearance"},
+				"boundingBox": { "$ref": "#/definitions/boundingBox"},
+				"options": { 
+					"oneOf": [
+						{"$ref": "#/definitions/optionsButton"},
+						{"$ref": "#/definitions/optionsTextField"},
+						null
+					]
+				},
+				"format": { "$ref": "#/definitions/format"}
+			},
+			"required": ["fieldType", "name", "appearance", "boundingBox", "options"]
+		},
+
+		"appearance": {
+			"type": "object",
+			"properties": {
+				"color": { "$ref": "#/definitions/color"},
+				"font" : { 
+					"type": "string",
+					"description": "the name of the font"
+				}
+			}
+		},
+		
+	    "color": {
+			"anyOf": [
+				{ "enum": [ "AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "Black", "BlanchedAlmond", "Blue", "BlueViolet", "Brown", "BurlyWood", "CadetBlue", "Chartreuse", "Chocolate", "Coral", "CornflowerBlue", "Cornsilk", "Crimson", "Cyan", "DarkBlue", "DarkCyan", "DarkGoldenRod", "DarkGray", "DarkGreen", "DarkGrey", "DarkKhaki", "DarkMagenta", "DarkOliveGreen", "DarkOrange", "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkSlateGrey", "DarkTurquoise", "DarkViolet", "DeepPink", "DeepSkyBlue", "DimGray", "DimGrey", "DodgerBlue", "FireBrick", "FloralWhite", "ForestGreen", "Fuchsia", "Gainsboro", "GhostWhite", "Gold", "GoldenRod", "Gray", "Green", "GreenYellow", "Grey", "HoneyDew", "HotPink", "IndianRed ", "Indigo ", "Ivory", "Khaki", "Lavender", "LavenderBlush", "LawnGreen", "LemonChiffon", "LightBlue", "LightCoral", "LightCyan", "LightGoldenRodYellow", "LightGray", "LightGreen", "LightGrey", "LightPink", "LightSalmon", "LightSeaGreen", "LightSkyBlue", "LightSlateGray", "LightSlateGrey", "LightSteelBlue", "LightYellow", "Lime", "LimeGreen", "Linen", "Magenta", "Maroon", "MediumAquaMarine", "MediumBlue", "MediumOrchid", "MediumPurple", "MediumSeaGreen", "MediumSlateBlue", "MediumSpringGreen", "MediumTurquoise", "MediumVioletRed", "MidnightBlue", "MintCream", "MistyRose", "Moccasin", "NavajoWhite", "Navy", "OldLace", "Olive", "OliveDrab", "Orange", "OrangeRed", "Orchid", "PaleGoldenRod", "PaleGreen", "PaleTurquoise", "PaleVioletRed", "PapayaWhip", "PeachPuff", "Peru", "Pink", "Plum", "PowderBlue", "Purple", "RebeccaPurple", "Red", "RosyBrown", "RoyalBlue", "SaddleBrown", "Salmon", "SandyBrown", "SeaGreen", "SeaShell", "Sienna", "Silver", "SkyBlue", "SlateBlue", "SlateGray", "SlateGrey", "Snow", "SpringGreen", "SteelBlue", "Tan", "Teal", "Thistle", "Tomato", "Turquoise", "Violet", "Wheat", "White", "WhiteSmoke", "Yellow", "YellowGreen"] }, 
+				{ "type": "string", "pattern": "^#(?:(?:[0-9a-fA-F]{1,2})){3}$" }
+			]
+		},
+
+		"boundingBox": {
+			"type": "object",
+			"description": "Coordinates are in points which are 1/72 of an inch, measured from the page origin in the lower left corner of the page. (PDF Reference - Annotation dictionary 'Rect')",
+			"properties": {
+				"lowerLeftX": {
+					"type": "integer",
+					"minimum": "0"
+				},
+				"lowerLeftY": {
+					"type": "integer",
+					"minimum": "0"
+				},
+				"upperRightX": {
+					"type": "integer",
+					"minimum": "0"
+				},
+				"upperRightY": {
+					"type": "integer",
+					"minimum": "0"
+				}
+			}
+		},
+
+		"optionsButton": {
+			"type": "object",
+			"properties": {
+				"pushButton": {
+					"type": "boolean",
+					"description": "If set, the field is a pushbutton that does not retain a permanent value. (PDF Reference - field dictionary 'Ff', bit-position 17)", 
+					"default": false
+				},
+				"radio": {
+					"type": "boolean",
+					"description": "If set, the field is a set of radio buttons; if clear, the field is a check box. This flag is meaningful only if the Pushbutton flag is clear. (PDF Reference - field dictionary 'Ff', bit-position 16)"
+				},
+				"buttonValue": {
+					"type": "string",
+					"description": "Applies to radio buttons. Identifies the specific radio button and differentiates it from other radio buttons that have the same Name value. (PDF Reference - field dictionary 'AS')"
+				}
+			}
+		},
+		
+		"optionsTextField": {
+			"type": "object",
+			"properties": {
+				"multiLine": { 
+					"type": "boolean",
+					"description": "(PDF Reference - field dictionary 'Ff', bit-position 13)",
+					"default" : false
+				},
+				"maxLen": { 
+					"type": "integer",
+					"description": "The maximum length of the field’s text, in characters.",
+					"minimum": 0,
+					"minimumExclusive" : true
+				}
+			}
+		},
+				
+		"format": {
+			"type": "object",
+			"description": "Used only for text form fields or editable dropdown/combo box form fields",
+			"properties": {
+				"formatCategory": { 
+					"enum": [
+						"None", "Date"
+					]
+				},
+				"formatOptions" : {
+					"oneOf": [
+						{"$ref": "#/definitions/dateFormatOptions"},
+						null
+					]
+				}
+			}
+		},
+		
+		"dateFormatOptions": {
+			"type": "string",
+			"description": "List includes one-, two-, and four-digit variations where d stands for the day, m stands for month, and y stands for year."
+		}
+	}
+ }
